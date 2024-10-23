@@ -110,7 +110,7 @@
                 const now = new Date().setHours(0, 0, 0, 0);
 
                 // Check if the wedding date is in the past
-                if (weddingDate <= now) {
+                if (weddingDate < now) {
                     countdownResult.innerHTML = "The wedding date has already passed!";
                     countdownResult.style.display = "block";
                     return;
@@ -120,6 +120,7 @@
                     const currentTime = new Date().getTime();
                     const timeDifference = weddingDate - currentTime;
 
+                    // Check if today is the wedding day
                     if (timeDifference <= 0) {
                         clearInterval(updateCountdown);
                         countdownResult.innerHTML = "Congratulations! 🎉 Your special day is here!";
