@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,7 +15,7 @@
             margin: 0;
         }
         .countdown-widget {
-            width: 700px;
+            width: 300px;
             height: auto;
             margin: 0 auto;
             background-color: #f2d7d7;
@@ -38,9 +39,13 @@
             margin-top: 5px;
             margin-bottom: 10px;
             width: 90%;
-            font-size: 0.9em;
+            -moz-appearance: textfield; /* For Firefox */
         }
-       
+        input[type="date"]::-webkit-inner-spin-button,
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+            -webkit-appearance: none; /* For Safari */
+        }
         button {
             font-family: "Times New Roman", serif;
             padding: 10px 20px;
@@ -68,26 +73,31 @@
 <body>
     <div class="countdown-widget">
         <h1>Wedding Countdown</h1>
-        <label for="date-input">Enter Your Wedding Date:</label>
+        <label for="date-input" id="date-label">Enter Your Wedding Date:</label>
         <input type="date" id="date-input" />
         <button id="start-countdown">Start Countdown</button>
         <div class="countdown-result" id="countdown"></div>
     </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const dateInput = document.getElementById("date-input");
             const countdownResult = document.getElementById("countdown");
+            const startButton = document.getElementById("start-countdown");
+            const widgetContainer = document.querySelector(".countdown-widget");
+            const dateLabel = document.getElementById("date-label");
             let updateCountdown; // Variable to store countdown interval
 
             const savedDate = localStorage.getItem("weddingDate");
 
-            // Load saved date if available
+            // Automatically start countdown if a date is saved
             if (savedDate) {
                 dateInput.value = savedDate;
                 startCountdown();
+                hideInputAndButton(); // Hide input and button on load
             }
 
-            document.getElementById("start-countdown").addEventListener("click", function () {
+            startButton.addEventListener("click", function () {
                 const enteredDate = dateInput.value;
                 if (!enteredDate) {
                     countdownResult.innerHTML = "Please enter a valid date.";
@@ -97,7 +107,14 @@
 
                 localStorage.setItem("weddingDate", enteredDate); // Save the date
                 startCountdown();
+                hideInputAndButton(); // Hide input and button after date is entered
             });
+
+            function hideInputAndButton() {
+                dateInput.style.display = "none";
+                startButton.style.display = "none";
+                dateLabel.style.display = "none"; // Hide the label
+            }
 
             function startCountdown() {
                 // Clear any existing countdown interval
