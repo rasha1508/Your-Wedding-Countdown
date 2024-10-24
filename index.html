@@ -90,17 +90,21 @@
 
             const savedDate = localStorage.getItem("weddingDate");
 
-            // Automatically start countdown if a date is saved
-            if (savedDate) {
+            // Check if there's a saved future date and automatically start countdown
+            if (savedDate && new Date(savedDate) >= new Date()) {
                 dateInput.value = savedDate;
                 startCountdown();
-                hideInputAndButton(); // Hide input and button on load
+                hideInputAndButton();
             }
 
             startButton.addEventListener("click", function () {
                 const enteredDate = dateInput.value;
-                if (!enteredDate) {
-                    countdownResult.innerHTML = "Please enter a valid date.";
+                const enteredDateValue = new Date(enteredDate).setHours(0, 0, 0, 0);
+                const now = new Date().setHours(0, 0, 0, 0);
+
+                // Validation: Ensure the entered date is in the future
+                if (!enteredDate || enteredDateValue < now) {
+                    countdownResult.innerHTML = "Please enter a valid future date.";
                     countdownResult.style.display = "block";
                     return;
                 }
@@ -125,6 +129,13 @@
                 const weddingDate = new Date(dateInput.value).setHours(0, 0, 0, 0);
                 const now = new Date().setHours(0, 0, 0, 0);
 
+                // Check if the wedding date is today
+                if (weddingDate === now) {
+                    countdownResult.innerHTML = "Congratulations! 🎉 Your special day is here!";
+                    countdownResult.style.display = "block";
+                    return;
+                }
+
                 // Check if the wedding date is in the past
                 if (weddingDate < now) {
                     countdownResult.innerHTML = "The wedding date has already passed!";
@@ -135,14 +146,6 @@
                 updateCountdown = setInterval(function () {
                     const currentTime = new Date().getTime();
                     const timeDifference = weddingDate - currentTime;
-
-                    // Check if today is the wedding day
-                    if (timeDifference <= 0) {
-                        clearInterval(updateCountdown);
-                        countdownResult.innerHTML = "Congratulations! 🎉 Your special day is here!";
-                        countdownResult.style.display = "block";
-                        return;
-                    }
 
                     const months = Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 30));
                     const days = Math.floor((timeDifference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
