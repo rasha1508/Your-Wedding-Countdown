@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wedding Countdown Timer</title>
     <style>
+      body, html {
+  overflow: hidden; /* Disable scrollbars */
+  height: 100%; /* Ensure the body takes full height */
+}
+
+.countdown-widget {
+  overflow: hidden; /* Prevent scrollbars within the widget */
+  max-height: 100vh; /* Ensure the widget doesn't exceed the view height */
+}
       body {
         font-family: "Times New Roman", serif;
         padding: 20px;
