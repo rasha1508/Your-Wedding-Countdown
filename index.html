@@ -5,15 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wedding Countdown Timer</title>
     <style>
-      body, html {
-  overflow: hidden; /* Disable scrollbars */
-  height: 100%; /* Ensure the body takes full height */
+     /* Prevent scrollbars on the entire page */
+body, html {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
 }
 
+/* Prevent scrollbars within the countdown widget */
 .countdown-widget {
-  overflow: hidden; /* Prevent scrollbars within the widget */
-  max-height: 100vh; /* Ensure the widget doesn't exceed the view height */
+  overflow: hidden;
+  max-width: 100%; /* Ensure no overflow horizontally */
+  max-height: 100vh; /* Prevent vertical overflow in embedded views */
 }
+
       body {
         font-family: "Times New Roman", serif;
         padding: 20px;
@@ -104,7 +109,7 @@
     <div class="countdown-widget">
       <h1 id="countdown-title">Wedding Countdown</h1>
       <label for="date-input" id="date-label">Enter Your Wedding Date:</label>
-      <input type="date" id="date-input" />
+      <input type="date" id="date-input" placeholder="Choose your wedding date" />
       <button id="start-countdown">Start Countdown</button>
       <div class="countdown-result" id="countdown"></div>
       <button class="change-date-button" id="change-date" style="display: none">
