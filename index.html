@@ -7,108 +7,128 @@
     <style>
       body {
         font-family: "Times New Roman", serif;
-        padding: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
         margin: 0;
-        background: #fff0f5;
+        background: transparent; /* so it blends in Notion */
       }
 
       .countdown-widget {
-        width: 700px;
-        background-color: #f2d7d7;
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        background: #fffaf0;
+        border: 1px solid #e3b5bd;
+        padding: 12px 18px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         text-align: center;
-        border: 2px solid #ac757e;
+        min-width: 450px;
       }
 
       h1 {
-        font-size: 2.2em;
+        font-size: 1.6em;
         color: #ac757e;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
       }
 
-      input[type="date"] {
+      input[type="datetime-local"] {
         font-family: "Times New Roman", serif;
-        padding: 8px;
-        border: 2px solid #ac757e;
-        background-color: #fffaf0;
+        padding: 10px 14px;
+        border: 1px solid #ac757e;
+        background-color: #fff;
         border-radius: 8px;
-        margin-bottom: 15px;
-        width: 90%;
-        font-size: 0.9em;
+        margin-bottom: 12px;
+        width: 100%; /* full width */
+        max-width: 320px; /* keeps it from being TOO wide */
+        font-size: 1em;
+        display: block;
+        margin-left: auto;
+        margin-right: auto; /* ensures centering */
+        box-sizing: border-box;
       }
 
       button {
         font-family: "Times New Roman", serif;
-        padding: 10px 20px;
+        padding: 6px 14px;
         color: #fffaf0;
         background-color: #ac757e;
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         cursor: pointer;
-        box-shadow: 2px 2px 2px black;
-        font-size: 1em;
-        margin-bottom: 10px;
+        font-size: 0.85em;
+        margin-bottom: 8px;
         transition: all 0.3s ease;
       }
 
       button:hover {
         background-color: #fffaf0;
         color: #ac757e;
+        border: 1px solid #ac757e;
       }
 
       #change-date {
         display: none;
-        background-color: transparent;
+        background: transparent;
         color: #ac757e;
-        border: 1px dashed #ac757e;
-        font-size: 0.8em;
+        border: none;
+        font-size: 0.75em;
+        margin-top: 5px;
+        opacity: 0.6;
         cursor: pointer;
-        margin-top: 10px;
-        transition: all 0.3s ease;
       }
 
       #change-date:hover {
-        color: #fffaf0;
-        background-color: #ac757e;
-        border: 1px solid #ac757e;
+        opacity: 1;
+        text-decoration: underline;
       }
 
       .countdown-result {
         display: flex;
         justify-content: center;
-        gap: 15px;
-        margin-top: 20px;
-        flex-wrap: wrap;
-        font-size: 1.5em;
+        gap: 12px;
+        margin-top: 12px;
+        font-size: 1.2em;
       }
 
       .time-box {
-        background: #fffaf0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 70px;
+        background: #ffffff;
+        border: 1px solid #e3b5bd;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .number {
+        font-weight: bold;
+        font-size: 1.4em;
         color: #ac757e;
-        padding: 15px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        min-width: 100px;
-        transition: all 0.5s ease;
+        transition: transform 0.3s ease;
       }
 
       .label {
-        display: block;
-        font-size: 0.7em;
-        color: #ac757e;
-        margin-top: 5px;
+        font-size: 0.65em;
+        color: #6b4c54;
+        margin-top: 3px;
       }
 
-      /* Animate numbers */
-      .number {
-        display: inline-block;
-        transition: transform 0.5s ease;
+      .big-day {
+        font-size: 1.4em;
+        font-weight: bold;
+        color: #ac757e;
+        animation: pop 1s infinite alternate;
+      }
+
+      @keyframes pop {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.1);
+        }
       }
     </style>
   </head>
@@ -116,8 +136,8 @@
   <body>
     <div class="countdown-widget">
       <h1>Wedding Countdown</h1>
-      <input type="date" id="date-input" />
-      <button id="start-countdown">Start Countdown</button>
+      <input type="datetime-local" id="date-input" />
+      <button id="start-countdown">Start</button>
       <div class="countdown-result" id="countdown"></div>
       <button id="change-date">Change Date</button>
     </div>
@@ -131,7 +151,6 @@
         let updateCountdown;
 
         const savedDate = localStorage.getItem("weddingDate");
-
         if (savedDate) {
           dateInput.value = savedDate;
           startCountdown();
@@ -141,10 +160,9 @@
         startBtn.addEventListener("click", function () {
           const enteredDate = dateInput.value;
           if (!enteredDate) {
-            alert("Please select a valid date.");
+            alert("Please select a valid date and time.");
             return;
           }
-
           localStorage.setItem("weddingDate", enteredDate);
           startCountdown();
           hideInputAndButton();
@@ -167,14 +185,7 @@
         function startCountdown() {
           if (updateCountdown) clearInterval(updateCountdown);
 
-          const weddingDate = new Date(dateInput.value).setHours(0, 0, 0, 0);
-          const now = new Date().setHours(0, 0, 0, 0);
-
-          if (weddingDate <= now) {
-            countdownResult.innerHTML = "The wedding date has already passed!";
-            countdownResult.style.display = "flex";
-            return;
-          }
+          const weddingDate = new Date(dateInput.value).getTime();
 
           updateCountdown = setInterval(function () {
             const currentTime = new Date().getTime();
@@ -183,8 +194,7 @@
             if (timeDifference <= 0) {
               clearInterval(updateCountdown);
               countdownResult.innerHTML =
-                '<div class="time-box">🎉 Today is your wedding! 🎉</div>';
-              countdownResult.style.display = "flex";
+                "<div class='big-day'>🎉 It's your big day! 🎉</div>";
               return;
             }
 
@@ -203,7 +213,6 @@
             );
             const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
 
-            // Update countdown with animation
             countdownResult.innerHTML = `
               <div class="time-box"><span class="number">${months}</span><span class="label">Months</span></div>
               <div class="time-box"><span class="number">${days}</span><span class="label">Days</span></div>
@@ -212,20 +221,19 @@
               <div class="time-box"><span class="number">${seconds}</span><span class="label">Seconds</span></div>
             `;
 
-            // Add subtle pop animation
+            // smooth animation
             const numbers = countdownResult.querySelectorAll(".number");
             numbers.forEach((num) => {
-              num.style.transform = "scale(1.2)";
-              setTimeout(() => (num.style.transform = "scale(1)"), 300);
+              num.style.transform = "scale(1.15)";
+              setTimeout(() => (num.style.transform = "scale(1)"), 200);
             });
-
-            countdownResult.style.display = "flex";
           }, 1000);
         }
       });
     </script>
   </body>
 </html>
+
 
 
 
